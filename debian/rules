@@ -1,0 +1,5 @@
+#!/usr/bin/make -f
+# You must remove unused comment lines for the release package.
+
+%:
+    dh $@ --with systemd

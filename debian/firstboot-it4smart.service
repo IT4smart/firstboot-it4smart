@@ -1,0 +1,16 @@
+[Unit]
+Description=Firstboot
+After=systemd-networkd-wait-online.service
+Wants=systemd-networkd-wait-online.service
+Requires=ssh.service
+
+[Service]
+Type=oneshot
+EnvironmentFile=-/etc/default/firstboot-it4smart
+ExecStartPre=/bin/sh -c 'until ping -c1 google.com; do sleep 1; done;'
+ExecStart=/bin/sh /etc/rc.firstboot
+RemainAfterExit=true
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target

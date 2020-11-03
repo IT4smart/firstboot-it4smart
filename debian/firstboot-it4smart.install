@@ -1,0 +1,2 @@
+src/rc.firstboot /etc/rc.firstboot
+src/user-notice.sh /opt/IT4smart/firstboot/user-notice.sh

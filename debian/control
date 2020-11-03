@@ -1,0 +1,15 @@
+source: firstboot-it4smart
+section: admin
+Priority: optional
+Maintainer: IT4smart GmbH <support@it4smart.eu>
+Build-Depends: debhelper (>=9)
+Standards-Version: 3.9.5
+Homepage: https://it4smart.eu
+Vcs-Git: https://github.com/IT4smart/firstboot-it4smart.git
+Vcs-Browser: https://github.com/IT4smart/firstboot-it4smart.git
+
+Package: firstboot-it4smart
+Architecture: any
+PreDepends: dpkg (>=1.16.1), ${mics:PreDepends}
+Depends: ${misc:Depends}
+Description: Provides all necessary scripts and services to handle firstboot action with sherlock.
