@@ -47,13 +47,14 @@ version: 2
 jobs:
   build-commit-debian-buster-i386:
     docker:
-      image: i386/debian:buster-slim
+      - image: i386/debian:buster-slim
     <<: *snapshot
 
 workflows:
   version: 2
   build-snapshot:
-    - build-commit-debian-buster-i386:
-        filters:
-          tags:
-            ignore: /.*/
+    jobs:
+      - build-commit-debian-buster-i386:
+          filters:
+            tags:
+              ignore: /.*/
