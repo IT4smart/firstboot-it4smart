@@ -2,4 +2,4 @@
 # You must remove unused comment lines for the release package.
 
 %:
-    dh $@ --with systemd
+        dh $@ --with systemd
