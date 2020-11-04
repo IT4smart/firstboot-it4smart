@@ -1,0 +1,15 @@
+[Unit]
+Description=Shows the user a notice and progress bar for provisioning the device after preseeding
+After=getty@tty1.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/opt/IT4smart/firstboot/user-notice.sh
+StandardInput=tty
+TTYPath=/dev/tty1
+TTYReset=yes
+TTYVHangup=yes
+
+[Install]
+WantedBy=default.target

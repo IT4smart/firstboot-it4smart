@@ -3,3 +3,7 @@
 
 %:
 	dh $@ --with systemd
+
+override_dh_installinit:
+	dh_installinit --name=firstboot-it4smart
+	dh_installinit --name=user-notice-it4smart
