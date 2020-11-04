@@ -43,11 +43,87 @@ snapshot: &snapshot
         paths:
           - build/*
 
+release: &release
+  working_directory: ~/repo
+  steps:
+    - checkout
+    - run:
+        name: Install build dependencies
+        command: |
+          apt-get update -qq
+          apt-get install -y dh-make git lsb-release
+    - run:
+        name: Create changelog
+        command: |
+          CODENAME=$(lsb_release --codename --short)
+          RELEASE=$(lsb_release --release --short)
+          ./changelog.sh firstboot-it4smart ${CODENAME} deb${RELEASE} > debian/chagelog
+    - run:
+        name: Create source archive
+        command: |
+          export GIT_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+          mkdir -p ~/repo/firstboot-it4smart-${GIT_TAG//v}
+          tar -czf /tmp/firstboot-it4smart-${GIT_TAG//v}.orig.tar.gz .
+          tar -xzf /tmp/firstboot-it4smart-${GIT_TAG//v}.orig.tar.gz -C ~/repo/firstboot-it4smart-${GIT_TAG//v}
+    - run:
+        name: Build package
+        command: |
+          export GIT_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+          cd ~/repo/firstboot-it4smart-${GIT_TAG//v}
+          dpkg-buildpackage -us -uc
+    - run:
+        name: Save build
+        command: |
+          mkdir -p ~/build
+          mv ~/repo/*.deb ~/build/
+    - add_ssh_keys:
+        fingerprints:
+          - "77:1e:e6:8b:6f:f5:1c:cc:c9:ca:92:02:1e:4b:c6:5f"
+    - run:
+        name: Upload package
+        command: |
+          CODENAME=$(lsb_release --codename --short)
+          scp -o StrictHostKeyChecking=no $(ls ~/build/*.deb) uploader@mirror.it4smart.eu:/var/repositories/debian/incoming/${CODENAME}/
+    - store_artifacts:
+        path: ~/build
+    - persist_to_workspace:
+        root: ~/
+        paths:
+          - build/*
+
 version: 2
 jobs:
+  build-release-debian-buster-i386:
+    docker:
+      - image: i386/debian:buster-slim
+    <<: *release
+  build-release-debian-stretch-i386:
+    docker:
+      - image: i386/debian:stretch-slim
+    <<: *release
+  build-release-debian-buster-amd64:
+    docker:
+      - image: debian:buster-slim
+    <<: *release
+  build-release-debian-stretch-amd64:
+    docker:
+      - image: debian:stretch-slim
+    <<: *release
   build-commit-debian-buster-i386:
     docker:
       - image: i386/debian:buster-slim
+    <<: *snapshot
+  build-commit-debian-stretch-i386:
+    docker:
+      - image: i386/debian:stretch-slim
+    <<: *snapshot
+  build-commit-debian-buster-amd64:
+    docker:
+      - image: debian:buster-slim
+    <<: *snapshot
+  build-commit-debian-stretch-amd64:
+    docker:
+      - image: debian:stretch-slim
     <<: *snapshot
 
 workflows:
@@ -58,3 +134,41 @@ workflows:
           filters:
             tags:
               ignore: /.*/
+      - build-commit-debian-stretch-i386:
+          filters:
+            tags:
+              ignore: /.*/
+      - build-commit-debian-buster-amd64:
+          filters:
+            tags:
+              ignore: /.*/
+      - build-commit-debian-stretch-amd64:
+          filters:
+            tags:
+              ignore: /.*/
+  build-release:
+    jobs:
+      - build-release-debian-buster-i386:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /v[0-9]+\.[0-9]+\.[0-9]+/
+      - build-release-debian-stretch-i386:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /v[0-9]+\.[0-9]+\.[0-9]+/
+      - build-release-debian-buster-amd64:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /v[0-9]+\.[0-9]+\.[0-9]+/
+      - build-release-debian-stretch-amd64:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /v[0-9]+\.[0-9]+\.[0-9]+/
