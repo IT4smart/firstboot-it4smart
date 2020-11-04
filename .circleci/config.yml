@@ -57,7 +57,7 @@ release: &release
         command: |
           CODENAME=$(lsb_release --codename --short)
           RELEASE=$(lsb_release --release --short)
-          ./changelog.sh firstboot-it4smart ${CODENAME} deb${RELEASE} > debian/chagelog
+          ./changelog.sh firstboot-it4smart ${CODENAME} deb${RELEASE} > debian/changelog
     - run:
         name: Create source archive
         command: |
