@@ -1,2 +1,2 @@
-src/firstboot.sh /opt/IT4smart/firstboot/firstboot.sh
-src/user-notice.sh /opt/IT4smart/firstboot/user-notice.sh
+src/firstboot.sh /opt/IT4smart/firstboot
+src/user-notice.sh /opt/IT4smart/firstboot
