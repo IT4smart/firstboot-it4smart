@@ -10,4 +10,3 @@ mac_address="$(cat /sys/class/net/${eth_device}/address)"
 curl -k -s -H "Content-Type: application/json" -X PUT https://${SHERLOCK_HOSTNAME}/api/v1/device/${mac_address}/provisioning
 
 logger -t "rc.firstboot" "First boot actions finished"
-EOF
